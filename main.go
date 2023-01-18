@@ -15,16 +15,14 @@ import (
 func main() {
 	var target string
 	var output string
-	var multiLine string
 	var split string
-	var lineNum int
+	var lineNum string
 	var noMsg bool
 
 	flag.StringVar(&target, "t", "", "Target file")
 	flag.StringVar(&output, "o", "", "Prints the output to a text file")
-	flag.StringVar(&multiLine, "ml", "", "Gets that lines which are entred")
 	flag.StringVar(&split, "s", "", "It splits the text")
-	flag.IntVar(&lineNum, "l", 0, "Gets that line which is entred")
+	flag.StringVar(&lineNum, "l", "", "Gets that line which is entred")
 	flag.BoolVar(&noMsg, "noMsg", false, "It returns just output")
 
 	flag.Parse()
@@ -36,12 +34,8 @@ func main() {
 
 	text := readFile(target)
 
-	if lineNum != 0 {
+	if lineNum != "" {
 		text = getLine(lineNum, text)
-	}
-
-	if multiLine != "" {
-		text = getLines(multiLine, text)
 	}
 
 	if split != "" {
@@ -76,30 +70,21 @@ func readFile(target string) string {
 	return string(stream)
 }
 
-func getLine(lineNum int, text string) string {
-	lines := strings.Split(text, "\n")
-	res := 0
-	for res, _ = range lines {
-		res = res
-	}
-	if res < lineNum {
-		fmt.Fprintln(os.Stderr, "ERROR: Invalid line")
-		os.Exit(1)
-	}
-	return lines[lineNum-1]
-}
-
-func getLines(lineNums, text string) string {
+func getLine(lineNums, text string) string {
 	nums := strings.Split(lineNums, ",")
 	lines := strings.Split(text, "\n")
-	res := 0
-	for res, _ = range lines {
-		res = res
-	}
-	num1, _ := strconv.Atoi(nums[0])
-	num2, _ := strconv.Atoi(nums[1])
+	res := []string{}
+	for _, i := range nums {
+		i, _ := strconv.Atoi(i)
+		if len(lines) < i || i <= 0 {
+			fmt.Fprintln(os.Stderr, "ERROR: Invalid line", i)
+			os.Exit(1)
+		}
 
-	return strings.Join(lines[num1-1:num2-1], "\n")
+		res = append(res, lines[i-1])
+	}
+
+	return strings.Join(res, "\n") 
 }
 
 func splitText(args, text string) string {
