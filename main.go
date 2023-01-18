@@ -15,13 +15,11 @@ import (
 func main() {
 	var target string
 	var output string
-	var split string
 	var lineNum string
 	var noMsg bool
 
 	flag.StringVar(&target, "t", "", "Target file")
 	flag.StringVar(&output, "o", "", "Prints the output to a text file")
-	flag.StringVar(&split, "s", "", "It splits the text")
 	flag.StringVar(&lineNum, "l", "", "Gets that line which is entred")
 	flag.BoolVar(&noMsg, "noMsg", false, "It returns just output")
 
@@ -38,9 +36,6 @@ func main() {
 		text = getLine(lineNum, text)
 	}
 
-	if split != "" {
-		text = splitText(split, text)
-	}
 
 	if !noMsg {
 		text += "\nDone"
@@ -87,23 +82,3 @@ func getLine(lineNums, text string) string {
 	return strings.Join(res, "\n") 
 }
 
-func splitText(args, text string) string {
-	argsParsed := strings.Split(args, ",")
-	if argsParsed[0] == "<comma>" {
-		argsParsed[0] = ","
-	}
-
-	indexes := argsParsed[1:]
-
-	result := ""
-	for _, el := range indexes {
-		i, err := strconv.Atoi(el)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "ERROR: You must entre an numerical value")
-		}
-
-		result += strings.Split(text, argsParsed[0])[i-1] + "\n"
-
-	}
-	return result
-}
