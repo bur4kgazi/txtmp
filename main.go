@@ -17,10 +17,12 @@ func main() {
 	var output string
 	var lineNum string
 	var noMsg bool
+	var splitArgs string
 
 	flag.StringVar(&target, "t", "", "Target file")
 	flag.StringVar(&output, "o", "", "Prints the output to a text file")
 	flag.StringVar(&lineNum, "l", "", "Gets that line which is entred")
+	flag.StringVar(&splitArgs, "s", "", "It splits the text")
 	flag.BoolVar(&noMsg, "noMsg", false, "It returns just output")
 
 	flag.Parse()
@@ -34,6 +36,10 @@ func main() {
 
 	if lineNum != "" {
 		text = getLine(lineNum, text)
+	}
+
+	if splitArgs != "" {
+		text = split(splitArgs, text)
 	}
 
 
@@ -80,5 +86,37 @@ func getLine(lineNums, text string) string {
 	}
 
 	return strings.Join(res, "\n") 
+}
+
+func split(args, text string) string{
+	parsedArgs := strings.Split(args, ",")
+	if parsedArgs[0] == "-comma-" {
+		parsedArgs[0] = ","
+	}
+	
+	if parsedArgs[0] == "-newLine-" {
+		parsedArgs[0] = "\n"
+	}
+
+	if parsedArgs[0] == "-space-" {
+		parsedArgs[0] = " "
+	}
+
+	word := parsedArgs[0]
+
+	indexes := parsedArgs[1:]
+
+	splitted_text := strings.Split(text, word)
+	res :=  []string{}
+	for _ , i := range indexes {
+		i, _ :=  strconv.Atoi(i)
+		if len(splitted_text) < i || i <= 0 {
+			fmt.Fprintln(os.Stderr, "ERROR: Invalid index", i)
+			os.Exit(1)
+		}
+		res = append(res, splitted_text[i-1])
+	}
+
+	return strings.Join(res, "\n")
 }
 
